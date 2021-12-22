@@ -13,35 +13,37 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
 
+public class ParticlesInField extends PApplet {
+
 //Particle Class
-Class Particle {
+class Particle {
   PVector pos;
   PVector vel;
   PVector acc;
   float  mass;
 
 
-  Particle(PVector v, float mass) {
-    pos = new v.copy();
-    vel = new PVector(random(-0.1,0.2),random(-0.1,0.2));
+  Particle(PVector v, float m) {
+    pos = v;
+    vel = new PVector(random(-0.1f,0.2f),random(-0.1f,0.2f));
     acc = new PVector(0,0);
-    mass = new mass.copy();
+    mass = m;
   }
 
-  void run() {
+   public void run() {
     update();
     display();
   }
   // updates data of particle
-  void update() {
+   public void update() {
     vel.add(acc);
     pos.add(vel);
   }
   // how the particle looks like
-  void display() {
-    stroke(255);
-    fill(255);
-    ellipse(pos.x, pos.y, 2,2);
+   public void display() {
+    stroke(123);
+    fill(0);
+    ellipse(pos.x, pos.y, 4,4);
   }
 }
 
@@ -54,25 +56,51 @@ Class Particle {
 // Display setup and draw
 ArrayList<Particle> particles;
 
-void setup() {
-  size(640, 360);
+ public void setup() {
+  /* size commented out by preprocessor */;
+  //  background(255);
   particles = new ArrayList<Particle>();
+  PVector p = new PVector(0,0);
+  //Particle particle = new Particle(p, 2);
+  //particles.add(particle);
+  //particles.get(0).run();
 }
 
-void draw() {
-  background(0);
-  for (Particle p : particles) {
-    p.run();
+
+ public void draw() {
+  background(255);
+  if (particles !=  null){
+    print(particles.size());
+  }
+  if (particles != null) {
+    for (int i = 0; i < particles.size(); i ++) {
+    particles.get(i).run();
+    }
   }
 }
 
-void mousePressed( ) {
+
+ public void mousePressed() {
   particles.add(new Particle(new PVector(mouseX, mouseY), 2));
 }
-//void borders() {
-//    if (position.x < -r) position.x = width+r;
-//    if (position.y < -r) position.y = height+r;
-//    if (position.x > width+r) position.x = -r;
-//    if (position.y > height+r) position.y = -r;
-//}
+/*
+void borders() {
+    if (position.x < -r) position.x = width+r;
+    if (position.y < -r) position.y = height+r;
+    if (position.x > width+r) position.x = -r;
+    if (position.y > height+r) position.y = -r;
+}
+*/
 
+
+  public void settings() { size(640, 360); }
+
+  static public void main(String[] passedArgs) {
+    String[] appletArgs = new String[] { "ParticlesInField" };
+    if (passedArgs != null) {
+      PApplet.main(concat(appletArgs, passedArgs));
+    } else {
+      PApplet.main(appletArgs);
+    }
+  }
+}
