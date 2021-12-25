@@ -4,38 +4,67 @@ class Particle {
   PVector vel;
   PVector acc;
   float  mass;
+  //float dt;
+  float r;
 
-
-  Particle(PVector v, float m) {
+  Particle(PVector v) {
     pos = v;
     vel = new PVector(random(-0.1,0.1),random(-0.1,0.1));
     acc = new PVector(0,0);
-    mass = m;
+    mass = random(-5,5);
+    r = 2;
   }
 
-
-  void run() {
-    update();
+  void run(ArrayList<Particle> particles) {
+    update(particles);
     display();
+    borders();
   }
   // updates data of particle
-  void update() {
-    vel.add(acc);
+  void update(ArrayList<Particle> particles) {
+    vel.add(Force(field(particles)));
     pos.add(vel);
   }
   // how the particle looks like
   void display() {
     stroke(255);
     fill(255);
-    ellipse(pos.x, pos.y, 4,4);
+    ellipse(pos.x, pos.y, abs(mass)*r,abs(mass)*r);
   }
+
+  // The field from other particles
+  ArrayList<PVector> field(ArrayList<Particle> particles) {
+    ArrayList<PVector> extFields = new ArrayList<PVector>();
+
+    for (Particle other : particles) {
+      PVector distance = PVector.sub(pos, other.pos);
+      if (distance.mag() > 0) {
+        extFields.add(distance.normalize().mult(mass).div(distance.magSq()));
+      }
+    }
+    return(extFields);
+    }
+
+  // The force the particle notices
+  PVector Force(ArrayList<PVector> fields) {
+    PVector force = new PVector(0,0);
+    for (PVector field : fields){
+      force.add(field);
+    }
+    return(force.div(100));
+  }
+
+
+  // Wrap
+  void borders() {
+      if (pos.x < -width/2) pos.x = width/2 ;
+      if (pos.y < -r) pos.y = height+r;
+      if (pos.x > width+r) pos.x = -r;
+      if (pos.y > height+r) pos.y = -r;
+  }
+
+
 }
-
-// Multiple particles
-//Class Particles {
-//  ArrayList<Particle> particles;
-
-//}
 
 // Display setup and draw
 ArrayList<Particle> particles;
@@ -49,26 +78,14 @@ void setup() {
 
 void draw() {
   background(0);
-  if (particles !=  null){
-    print(particles.size());
-  }
   if (particles != null) {
-    for (int i = 0; i < particles.size(); i ++) {
-    particles.get(i).run();
+    for (Particle all : particles) {
+      all.run(particles);
     }
   }
 }
 
 
 void mousePressed() {
-  particles.add(new Particle(new PVector(mouseX, mouseY), 2));
+  particles.add(new Particle(new PVector(mouseX, mouseY)));
 }
-
-/*
-void borders() {
-    if (position.x < -r) position.x = width+r;
-    if (position.y < -r) position.y = height+r;
-    if (position.x > width+r) position.x = -r;
-    if (position.y > height+r) position.y = -r;
-}
-*/
